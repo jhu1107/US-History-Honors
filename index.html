@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>US History Timeline</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --bg:#F3F1EC; --surface:#FFFFFF; --fg:#1D2228; --muted:#5E6670; --line:#D9D5CB;
+  --accent:#1F5F8B; --accent-fg:#fff;
+  --e:#A8620F; --s:#8A3B5C; --r:#1F5F8B; --g:#2A7A56;
+  --serif:Georgia,'Times New Roman',serif; --sans:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171B; --surface:#1C2127; --fg:#E8ECEF; --muted:#A0A9B2; --line:#2F363E;
+    --accent:#6FB3E0; --accent-fg:#0B1218;
+    --e:#E3A25A; --s:#E08AAE; --r:#6FB3E0; --g:#5FC59A; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171B; --surface:#1C2127; --fg:#E8ECEF; --muted:#A0A9B2; --line:#2F363E;
+  --accent:#6FB3E0; --accent-fg:#0B1218;
+  --e:#E3A25A; --s:#E08AAE; --r:#6FB3E0; --g:#5FC59A; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.5;
+  padding:24px max(16px,env(safe-area-inset-right,0px)) 56px max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:760px;margin:0 auto}
+h1{font-family:var(--serif);font-size:clamp(26px,5vw,34px);margin:0 0 6px;line-height:1.15}
+.sub{color:var(--muted);font-size:14px;margin:0 0 16px;max-width:62ch}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 13px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:7px}
+.chip[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.tl{position:relative;margin:0;padding:0;list-style:none}
+.tl:before{content:"";position:absolute;left:92px;top:0;bottom:0;width:2px;background:var(--line)}
+.item{display:grid;grid-template-columns:84px 1fr;gap:0 22px;margin-bottom:10px;position:relative}
+.date{font-size:13px;font-weight:600;color:var(--muted);text-align:right;padding-top:14px;font-variant-numeric:tabular-nums}
+.item:before{content:"";position:absolute;left:87px;top:19px;width:12px;height:12px;border-radius:50%;background:var(--c);border:2px solid var(--bg)}
+.card{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:12px;padding:12px 14px;text-align:left;width:100%;min-width:0}
+.card h2{margin:0;font-size:16px;font-weight:600;font-family:var(--serif);overflow-wrap:anywhere}
+.card p{margin:4px 0 0;font-size:14.5px}
+.more{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);display:flex;flex-direction:column;gap:8px}
+.lab{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+.link{border:1px solid var(--line);background:transparent;border-radius:8px;padding:6px 10px;font-size:13.5px;text-align:left;display:block;width:100%}
+.link b{font-weight:600}
+.item.dim{opacity:.35}
+.item.hl .card{box-shadow:0 0 0 2px var(--accent)}
+.hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+@media (max-width:520px){
+  .tl:before{left:10px}
+  .item{grid-template-columns:1fr;padding-left:30px}
+  .item:before{left:4px;top:8px}
+  .date{text-align:left;padding-top:0;margin-bottom:3px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>US History Timeline</h1>
+  <p class="sub">Honors US History key terms in order, from before 1492 to the early republic. Each event has a definition and why it matters. Tap one to see what led to it and what it led to. Connections are drawn from standard history, so check them against your own notes.</p>
+  <div class="chips" id="chips" role="group" aria-label="Filter by theme"></div>
+  <ol class="tl" id="tl"></ol>
+</div>
+
+<script>
+(function(){
+var T={
+  e:{n:"Empire & conquest",c:"var(--e)"},
+  s:{n:"Slavery & resistance",c:"var(--s)"},
+  r:{n:"Revolution",c:"var(--r)"},
+  g:{n:"Government & rights",c:"var(--g)"}
+};
+/* id, date label, title, text, theme, links to later/related events [id, reason] */
+var D=[
+["bering","Before 12,000 BCE","Bering Land Bridge & Kelp Highway","Two theories of how people first reached the Americas: on foot across Beringia, or by boat along the Pacific coast. The timing is still debated.","e",[["columbian","Societies built over thousands of years later faced the Columbian Exchange"]]],
+["magna","1215","Magna Carta","English barons forced King John to accept limits on royal power and protect due process.","g",[["glorious","The idea of a limited king returns in 1688-89"]]],
+["spain","1492","Spanish unification & Columbus","Castile and Aragon unite, the Reconquest ends at Granada, and Columbus sails west. The Inquisition enforces religious unity.","e",[["columbian","The voyage opens the exchange"],["encom","Spain builds a system to control the lands it claims"]]],
+["columbian","1493 on","Columbian Exchange","Crosby's thesis: plants, animals, people, and diseases cross the Atlantic and remake both hemispheres. Disease killed enormous numbers of Native people.","e",[["encom","Population collapse and conquest feed the demand for forced labor"]]],
+["encom","c. 1503","Encomienda","Spain grants colonists the labor and tribute of Native communities in return for \"protection\" and conversion. In practice it meant forced labor.","e",[["lascasas","Las Casas condemned it"]]],
+["reform","1517","Protestant Reformation","Luther's challenge breaks Western Christianity apart. Calvinists and later Quakers shape English colonies.","g",[["civilwar","Religious conflict feeds the Puritan-royalist struggle in England"]]],
+["lascasas","1542","Las Casas, Short Account","Bartolomé de Las Casas writes against Spanish cruelty (published 1552). The Black Legend grows from such accounts.","e",[]],
+["civilwar","1642-51","English Civil War","Parliament fights Charles I, who is executed in 1649.","g",[["glorious","Parliament's power keeps growing"]]],
+["barbados","1661","Barbados Code","Harsh slave law in the English sugar colony that treated Africans as property.","s",[["bacon","Virginia's slave laws later borrowed from this model after Bacon's Rebellion"]]],
+["kpw","1675-76","King Philip's War","Metacom's Wampanoag-led alliance fights New England colonists in a devastating war.","e",[["bacon","Frontier warfare with Native peoples also sparks Bacon's Rebellion"]]],
+["bacon","1676","Bacon's Rebellion","Poor whites, servants, and some Black laborers in Virginia rise against the elite and attack Native peoples. Elites respond by sharpening racial divisions.","s",[]],
+["pueblo","1680","Pueblo Revolt","Pueblo peoples under Popé drive the Spanish out of New Mexico for over a decade.","e",[["kpw","Another case of Native resistance to colonial expansion"]]],
+["codenoir","1685","French Code Noir","Royal rules for slavery in French colonies.","s",[["barbados","Parallel state-made racial slave law"],["equiano","The kind of system Equiano described"]]],
+["glorious","1688-89","Glorious Revolution","James II is replaced by William and Mary, and the English Bill of Rights limits the crown.","g",[["locke","Locke defends consent of the governed"]]],
+["locke","1689-90","Locke & Hobbes: social contract","Locke argues people have natural rights and may resist a government that violates them. Hobbes argues for a strong sovereign.","g",[["decl","The Declaration echoes natural rights"]]],
+["nyc1712","1712","New York City revolt","Enslaved people rebel in New York City.","s",[["tacky","Continuing enslaved resistance"]]],
+["sevenyears","1756-63","Seven Years War","Britain beats France. It ends with large debts and a larger empire to govern.","e",[["pontiac","Native nations face a new British presence"],["stamp","War debt leads to new colonial taxes"]]],
+["tacky","1760","Tacky's Revolt","A large revolt of enslaved people in Jamaica.","s",[["haiti","Part of the Age of Black Revolutions"]]],
+["pontiac","1763","Pontiac's War & Proclamation Line","A Native alliance attacks British forts. Britain bars settlement west of the Appalachians, which angers colonists.","e",[]],
+["stamp","1765","Stamp Act Congress","Nine colonies protest taxation without representation.","r",[["boston","Resistance escalates"]]],
+["regulators","1765-71","Regulators (NC)","Backcountry farmers protest corrupt officials. They are defeated at Alamance in 1771.","r",[]],
+["tenant","1766","New York Tenant Riots","Hudson Valley tenants rise against landlords.","r",[["regulators","Similar class conflict inside the colonies"]]],
+["boston","1770","Boston Massacre","British soldiers kill five colonists, including Crispus Attucks.","r",[["tea","Tension keeps growing"]]],
+["tea","1773","Boston Tea Party","Colonists dump tea to protest the Tea Act. Britain answers with the Intolerable Acts.","r",[["cc1","The Intolerable Acts prompt a joint colonial response"]]],
+["cc1","1774","First Continental Congress","Colonial delegates coordinate their response to the Intolerable Acts.","r",[["lexington","Fighting breaks out the next spring"]]],
+["lexington","Apr 1775","Lexington and Concord","The first battles of the war.","r",[["olive","Congress still tries to reconcile"]]],
+["olive","Jul 1775","Olive Branch Petition","Congress's last appeal to George III, who rejects it.","r",[["decl","Rejection pushes toward independence"]]],
+["dunmore","Nov 1775","Lord Dunmore's Proclamation","Virginia's royal governor offers freedom to enslaved people of rebel masters who join the British.","s",[["decl","Jefferson's draft blames the king for stirring up insurrection among enslaved people"]]],
+["decl","1776","Declaration of Independence","Natural rights and grievances against the king. \"All men are created equal\" stands beside slavery.","r",[["saratoga","The war that follows"]]],
+["saratoga","1777","Battle of Saratoga","An American victory that helps bring France into the war.","r",[["yorktown","French help proves decisive"]]],
+["yorktown","1781","Battle of Yorktown","Cornwallis surrenders to French and American forces, effectively ending the fighting.","r",[["articles","The new nation needs a government"]]],
+["articles","1781","Articles of Confederation","A weak national government with no power to tax and no executive.","g",[["shays","Its weakness is exposed"]]],
+["shays","1786-87","Shays' Rebellion","Indebted Massachusetts farmers shut courts and march on an armory.","g",[["const","Alarm leads to the Constitutional Convention"]]],
+["const","1787","The US Constitution","Three branches, checks and balances, and compromises over slavery, including the three-fifths clause (Art. I) and the Fugitive Slave clause (Art. IV).","g",[["fed","Supporters argue for ratification"],["bor","Anti-Federalists demand a bill of rights"],["marbury","Judicial power is later defined"],["natur","Early Congress defines who can become a citizen"]]],
+["fed","1787-88","The Federalist Papers","Hamilton, Madison, and Jay urge ratification. Federalist 10 covers factions.","g",[]],
+["fr","1789","French Revolution","The monarchy falls, and the Declaration of the Rights of Man follows.","r",[["haiti","Ideas of rights reach Saint-Domingue"]]],
+["equiano","1789","Equiano's narrative","Olaudah Equiano's firsthand account of enslavement and the Middle Passage.","s",[]],
+["natur","1790","Naturalization Act of 1790","Limits naturalization to \"free white persons.\" Contrasts with the Immigration Act of 1990.","g",[]],
+["bor","1791","Bill of Rights","The first ten amendments, written mainly by Madison.","g",[]],
+["haiti","1791-1804","Haitian Revolution","The only successful revolt of enslaved people to found a state, led by Toussaint Louverture and Dessalines.","s",[["chumash","The Age of Revolutions thesis links such movements"]]],
+["marbury","1803","Marbury v. Madison","The Supreme Court establishes judicial review.","g",[]],
+["chumash","1824","Chumash Revolt","Chumash people rebel against harsh conditions at California missions.","e",[]]
+];
+var S={
+bering:"Shows the deep history of Indigenous peoples and challenges the idea of a \"new\" world. The timing is debated because older sites keep turning up.",
+magna:"A precedent for limited government and due process. Colonists later claimed these as the \"rights of Englishmen.\"",
+spain:"Began the Spanish empire and the Atlantic encounter. Religious and ethnic purity shaped how Spain governed its colonies.",
+columbian:"Remade diets, economies, and populations on both sides of the Atlantic. Disease helps explain why conquest succeeded.",
+encom:"Set the pattern of forced labor in the Spanish empire and sparked early debate over the treatment of Native peoples.",
+reform:"Religious motives drove English colonization (Puritans, Quakers) and ideas of conscience and self-government.",
+lascasas:"An early human-rights critique. It also fed the Black Legend, which painted Spain as uniquely cruel and hid other empires' abuses.",
+civilwar:"Established Parliament's power against the crown and pushed Puritans to migrate. Shaped colonial ideas of rights.",
+barbados:"A template for racialized slave law that spread to the mainland, including Virginia.",
+kpw:"Broke Native power in southern New England and reshaped relations between colonists and Native peoples.",
+bacon:"Elites feared a poor-white and Black alliance, so Virginia's laws sharpened racial divisions and moved toward racial slavery.",
+pueblo:"A rare successful Indigenous revolt. It forced Spain to change how it ruled New Mexico.",
+codenoir:"Shows that states built race into law and regulated slavery as a legal system.",
+glorious:"Established parliamentary supremacy. Colonists later appealed to these rights against Britain.",
+locke:"The intellectual base for the Declaration: government rests on consent, and people can resist violations of their rights.",
+nyc1712:"Shows resistance to slavery in the North and the harsh punishments that followed.",
+sevenyears:"Removed the French threat and left Britain with debt, so it taxed the colonies. That began the Revolutionary crisis.",
+tacky:"Showed that slaveholders' fear of revolt was real. Part of the Age of Black Revolutions.",
+pontiac:"Colonists resented the western limit. Native resistance shaped British policy.",
+stamp:"The first united colonial protest and the origin of \"no taxation without representation.\"",
+regulators:"Shows class and regional conflict before the war, so the colonists were not united.",
+tenant:"Another example of class conflict inside the colonies. Supports Nash and Zinn's emphasis on ordinary people.",
+boston:"Became powerful propaganda and radicalized opinion. Crispus Attucks, a man of African and Native descent, was among the dead.",
+tea:"Britain's response, the Intolerable Acts, pushed the colonies toward united resistance.",
+cc1:"First real colonial cooperation, a step toward a national government.",
+lexington:"Turned the political crisis into armed war.",
+olive:"Shows that independence was not the colonists' first choice.",
+dunmore:"Thousands of enslaved people fled to British lines. It alarmed slaveholders and shows the contradiction between liberty and slavery.",
+decl:"States the ideals of the Revolution, but \"all men are created equal\" went unfulfilled for enslaved people and women.",
+saratoga:"The turning point that brought France in as an ally.",
+yorktown:"Effectively ended major fighting and led to the Treaty of Paris (1783).",
+articles:"Reflected fear of strong central power. Its weakness led to the Constitution.",
+shays:"Exposed the Articles' weakness and alarmed elites, who then wanted a stronger government.",
+const:"Created the federal framework still in use, but protected slavery through the three-fifths and Fugitive Slave clauses.",
+fed:"The best contemporary argument for the Constitution. Federalist 10 is Madison's argument about factions.",
+fr:"Part of the Age of Revolutions. Shows the spread of ideas about rights.",
+equiano:"A rare firsthand account by an enslaved African that helped the antislavery cause.",
+natur:"Tied citizenship to whiteness. An example of the ethnic concept of the nation.",
+bor:"Protects individual rights and reserves powers to the states. The promise of it helped win ratification.",
+haiti:"Terrified slaveholders and inspired others. Central to the Age of Black Revolutions.",
+marbury:"Established judicial review, the power of courts to strike down laws.",
+chumash:"Shows that revolutionary resistance reached the Pacific coast and that Indigenous people resisted the mission system."
+};
+var byId={};D.forEach(function(d,i){byId[d[0]]={i:i,id:d[0],date:d[1],title:d[2],text:d[3],th:d[4],to:d[5],from:[]};});
+D.forEach(function(d){d[5].forEach(function(l){if(byId[l[0]])byId[l[0]].from.push([d[0],l[1]]);});});
+var items=D.map(function(d){return byId[d[0]];});
+var theme="all",open=null;
+function esc(s){return String(s).replace(/[&<>"]/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m];});}
+var chips=document.getElementById("chips");
+function drawChips(){
+  var h='<button type="button" class="chip" data-t="all" aria-pressed="'+(theme==="all")+'">All themes</button>';
+  Object.keys(T).forEach(function(k){h+='<button type="button" class="chip" data-t="'+k+'" aria-pressed="'+(theme===k)+'"><span class="dot" style="background:'+T[k].c+'"></span>'+T[k].n+'</button>';});
+  chips.innerHTML=h;
+}
+function related(id){var s={};var o=byId[id];o.to.forEach(function(l){s[l[0]]=1;});o.from.forEach(function(l){s[l[0]]=1;});return s;}
+function draw(){
+  var rel=open?related(open):{};
+  var h="";
+  items.forEach(function(it){
+    var dim=theme!=="all"&&it.th!==theme;
+    var hl=open&&(rel[it.id]);
+    h+='<li class="item'+(dim?' dim':'')+(hl?' hl':'')+'" style="--c:'+T[it.th].c+'" id="i-'+it.id+'"><div class="date">'+esc(it.date)+'</div>'+
+    '<div><button type="button" class="card" data-id="'+it.id+'" aria-expanded="'+(open===it.id)+'"><h2>'+esc(it.title)+'</h2><p class="lab" style="margin-top:8px">Definition</p><p>'+esc(it.text)+'</p><p class="lab" style="margin-top:8px">Why it matters</p><p>'+esc(S[it.id]||"")+'</p>';
+    if(open===it.id){
+      h+='<div class="more">';
+      if(it.from.length){h+='<div><div class="lab">Led to by</div>';it.from.forEach(function(l){h+='<span class="link"><b>'+esc(byId[l[0]].title)+'</b> — '+esc(l[1])+'</span>';});h+='</div>';}
+      if(it.to.length){h+='<div><div class="lab">Leads to</div>';it.to.forEach(function(l){h+='<span class="link"><b>'+esc(byId[l[0]].title)+'</b> — '+esc(l[1])+'</span>';});h+='</div>';}
+      if(!it.from.length&&!it.to.length)h+='<div class="hint">No direct links drawn for this one.</div>';
+      h+='</div>';
+    }
+    h+='</button></div></li>';
+  });
+  document.getElementById("tl").innerHTML=h;
+}
+document.addEventListener("click",function(e){
+  var c=e.target.closest("[data-t]");
+  if(c){theme=c.getAttribute("data-t");drawChips();draw();return;}
+  var k=e.target.closest("[data-id]");
+  if(k){var id=k.getAttribute("data-id");open=open===id?null:id;draw();var el=document.getElementById("i-"+id);}
+});
+drawChips();draw();
+})();
+</script>
+</body>
+</html>
